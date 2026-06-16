@@ -75,15 +75,15 @@
     "updates": "^17.18.0",
     "vitest": "^4.1.9"
   },
-  "author": "seydx (https://github.com/seydx/camera.ui)",
+  "author": "seydx (https://github.com/cameraui/common)",
   "bugs": {
-    "url": "https://github.com/seydx/camera.ui/issues"
+    "url": "https://github.com/cameraui/common/issues"
   },
-  "homepage": "https://github.com/seydx/camera.ui#readme",
+  "homepage": "https://github.com/cameraui/common#readme",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/seydx/camera.ui.git"
+    "url": "git+https://github.com/cameraui/common.git"
   },
   "keywords": [
     "camera.ui",
