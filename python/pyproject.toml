@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "camera-ui-common"
+version = "1.0.13"
+description = "camera.ui python utilities"
+keywords = ["camera.ui", "python", "utilities"]
+readme = "README.md"
+license-files = ["LICENSE.md"]
+authors = [{ name = "seydx", email = "hi@seydx.dev" }]
+maintainers = [{ name = "seydx", email = "hi@seydx.dev" }]
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = ["typing_extensions>=4.15.0", "camera-ui-sdk>=1.0.94"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://github.com/seydx/camera.ui"
+Documentation = "https://github.com/seydx/camera.ui"
+Repository = "https://github.com/seydx/camera.ui"
+"Bug Tracker" = "https://github.com/seydx/camera.ui/issues"
+Changelog = "https://github.com/seydx/camera.ui/blob/master/CHANGELOG.md"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["camera_ui_common*"]
+
+[tool.setuptools.package-data]
+camera_ui_common = ["py.typed"]

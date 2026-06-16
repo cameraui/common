@@ -1,0 +1,57 @@
+name: Test
+
+on:
+  workflow_call:
+    inputs:
+      node:
+        type: boolean
+        default: true
+      python:
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    if: ${{ inputs.node }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm ci --prefix node
+
+      - name: Lint
+        run: npm run lint:node
+
+      - name: Fail if linting produced changes
+        run: git diff --exit-code
+
+      - name: Unit tests
+        run: npm --prefix node test
+
+  python:
+    if: ${{ inputs.python }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install -e "./python[test]" mypy
+
+      - name: Lint (mypy)
+        run: cd python && mypy --config-file ./mypy.ini camera_ui_common
+
+      - name: Unit tests
+        # Exit code 5 = "no tests collected" (no tests yet) — treat as success.
+        run: cd python && python -m pytest || [ $? -eq 5 ]

@@ -1,0 +1,93 @@
+{
+  "name": "@camera.ui/common",
+  "version": "0.0.42",
+  "description": "camera.ui utilities",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./camera": {
+      "types": "./dist/camera/index.d.ts",
+      "require": "./dist/camera/index.js",
+      "default": "./dist/camera/index.js"
+    },
+    "./logger": {
+      "types": "./dist/logger/index.d.ts",
+      "require": "./dist/logger/index.js",
+      "default": "./dist/logger/index.js"
+    },
+    "./net": {
+      "types": "./dist/net/index.d.ts",
+      "require": "./dist/net/index.js",
+      "default": "./dist/net/index.js"
+    },
+    "./network": {
+      "types": "./dist/network/index.d.ts",
+      "require": "./dist/network/index.js",
+      "default": "./dist/network/index.js"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "require": "./dist/node/index.js",
+      "default": "./dist/node/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "require": "./dist/utils/index.js",
+      "default": "./dist/utils/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "format": "prettier --write 'src/' --ignore-unknown --no-error-on-unmatched-pattern",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "test": "vitest run --passWithNoTests",
+    "update": "updates --update ./",
+    "install-updates": "npm i --save",
+    "prepublishOnly": "npm i --package-lock-only && npm run lint:fix && npm run format && npm run build"
+  },
+  "dependencies": {
+    "@camera.ui/sdk": "^0.0.5",
+    "@seydx/fix-path": "^5.0.0",
+    "ansicolor": "^2.0.3",
+    "pick-port": "^2.2.1",
+    "rxjs": "^7.8.2",
+    "sdp-transform": "^3.0.0",
+    "systeminformation": "^5.31.7"
+  },
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@types/node": "25.9.3",
+    "@types/sdp-transform": "^3.0.0",
+    "@typescript-eslint/parser": "^8.61.1",
+    "eslint": "9.39.2",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.4",
+    "rimraf": "^6.1.3",
+    "tsyringe": "^4.10.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.61.1",
+    "updates": "^17.18.0",
+    "vitest": "^4.1.9"
+  },
+  "author": "seydx (https://github.com/seydx/camera.ui)",
+  "bugs": {
+    "url": "https://github.com/seydx/camera.ui/issues"
+  },
+  "homepage": "https://github.com/seydx/camera.ui#readme",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seydx/camera.ui.git"
+  },
+  "keywords": [
+    "camera.ui",
+    "common",
+    "utils"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@camera.ui/common-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "camera.ui common monorepo",
+  "type": "module",
+  "scripts": {
+    "build:node": "npm --prefix node run build",
+    "build:python": "cd python && python scripts/build.py --local",
+    "build": "npm run build:node && npm run build:python",
+    "lint:node": "npm --prefix node run format && npm --prefix node run lint:fix",
+    "lint:python": "cd python && mypy --config-file ./mypy.ini camera_ui_common",
+    "lint": "npm run lint:node && npm run lint:python",
+    "test:node": "npm --prefix node test",
+    "test:python": "cd python && python -m pytest || [ $? -eq 5 ]",
+    "test": "npm run test:node && npm run test:python",
+    "release": "bash scripts/release.sh",
+    "update": "updates --update ./ && updates --file node,python --update ./ && npm i --save && npm run install-updates --if-present --prefix node"
+  },
+  "homepage": "https://github.com/cameraui/common#readme",
+  "bugs": {
+    "url": "https://github.com/cameraui/common/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cameraui/common.git"
+  },
+  "license": "MIT",
+  "author": "seydx",
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "tsx": "^4.22.4",
+    "typescript": "5.9.3",
+    "updates": "^17.18.0"
+  }
+}

@@ -1,0 +1,17 @@
+eslint.config.js
+.editorconfig
+.eslintignore
+.eslintrc.js
+.eslintrc.cjs
+.gitignore
+.npmignore
+.prettierignore
+.prettierrc.json
+tsconfig.json
+updates.config.js
+
+node_modules
+.github
+.vscode
+
+/src
