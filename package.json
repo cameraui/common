@@ -15,6 +15,7 @@
     "test:python": "cd python && python -m pytest || [ $? -eq 5 ]",
     "test": "npm run test:node && npm run test:python",
     "release": "bash scripts/release.sh",
+    "install-updates": "npm i --save && npm run install-updates --if-present --prefix node",
     "update": "updates --update ./ && updates --file node,python --update ./ && npm i --save && npm run install-updates --if-present --prefix node"
   },
   "homepage": "https://github.com/cameraui/common#readme",
