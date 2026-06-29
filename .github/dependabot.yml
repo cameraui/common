@@ -12,7 +12,13 @@ updates:
     directory: "/node"
     schedule:
       interval: daily
+    ignore:
+      - dependency-name: "eslint"
+      - dependency-name: "typescript"
   - package-ecosystem: npm
     directory: "/"
     schedule:
       interval: daily
+    ignore:
+      - dependency-name: "eslint"
+      - dependency-name: "typescript"
