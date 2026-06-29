@@ -51,7 +51,7 @@
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run format && npm run build"
   },
   "dependencies": {
-    "@camera.ui/sdk": "~0.0.10",
+    "@camera.ui/sdk": "~0.0.11",
     "@seydx/fix-path": "^5.0.0",
     "ansicolor": "^2.0.3",
     "pick-port": "^2.2.1",
