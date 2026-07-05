@@ -51,17 +51,17 @@
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run format && npm run build"
   },
   "dependencies": {
-    "@camera.ui/sdk": "~0.0.11",
+    "@camera.ui/sdk": "~0.0.12",
     "@seydx/fix-path": "^5.0.0",
     "ansicolor": "^2.0.3",
     "pick-port": "^2.2.1",
     "rxjs": "^7.8.2",
     "sdp-transform": "^3.0.0",
-    "systeminformation": "^5.31.11"
+    "systeminformation": "^5.31.13"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@types/node": "26.0.1",
+    "@types/node": "26.1.0",
     "@types/sdp-transform": "^3.0.0",
     "@typescript-eslint/parser": "^8.62.1",
     "eslint": "9.39.2",
@@ -71,7 +71,7 @@
     "tsyringe": "^4.10.0",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.62.1",
-    "updates": "^17.18.1",
+    "updates": "^17.18.2",
     "vitest": "^4.1.9"
   },
   "author": "seydx (https://github.com/cameraui/common)",
