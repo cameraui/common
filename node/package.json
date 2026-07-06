@@ -72,7 +72,7 @@
     "typescript": "5.9.3",
     "typescript-eslint": "^8.62.1",
     "updates": "^17.18.2",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "author": "seydx (https://github.com/cameraui/common)",
   "bugs": {
