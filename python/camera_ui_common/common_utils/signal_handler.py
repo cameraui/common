@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import os
 import signal
+import sys
 import traceback
 from collections.abc import Callable, Coroutine
 from typing import Any, TypedDict
@@ -43,15 +45,14 @@ class SignalHandler:
         loop = asyncio.get_running_loop()
         with contextlib.suppress(NotImplementedError):
             for signame in ("SIGINT", "SIGTERM"):
-
-                def signal_callback() -> None:
-                    with contextlib.suppress(asyncio.CancelledError):
-                        asyncio.create_task(self.gracefully_close(signame))
-
                 sig = getattr(signal, signame)
-                loop.add_signal_handler(sig, signal_callback)
+                loop.add_signal_handler(sig, self._on_signal, signame)
 
         loop.set_exception_handler(self.handle_exception)
+
+    def _on_signal(self, signame: str) -> None:
+        with contextlib.suppress(asyncio.CancelledError):
+            asyncio.create_task(self.gracefully_close(signame))
 
     async def gracefully_close(self, signame: str) -> None:
         if self.is_shutting_down:
@@ -63,16 +64,23 @@ class SignalHandler:
         try:
             close_task = asyncio.create_task(self.close_function())
             await asyncio.wait_for(close_task, timeout=self.timeout_duration)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             self.logger.warn(
                 f"{self.display_name} Failed to gracefully close before timeout. Force quitting!"
             )
         except Exception as e:
-            self.logger.error(f"Error during shutdown: {str(e)}\n{traceback.format_exc()}")
+            self.logger.error(
+                f"Error during shutdown: {str(e)}\n{traceback.format_exc()}"
+            )
         finally:
             self.shutdown_event.set()
+            sys.stdout.flush()
+            sys.stderr.flush()
+            os._exit(1 if signame == "uncaughtException" else 0)
 
-    def handle_exception(self, loop: asyncio.AbstractEventLoop, context: dict[str, Any]) -> None:
+    def handle_exception(
+        self, loop: asyncio.AbstractEventLoop, context: dict[str, Any]
+    ) -> None:
         exception = context.get("exception")
         message = context.get("message")
         task = context.get("task")  # Das Task Objekt
