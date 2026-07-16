@@ -51,7 +51,7 @@
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run format && npm run build"
   },
   "dependencies": {
-    "@camera.ui/sdk": "~0.0.19",
+    "@camera.ui/sdk": "~0.0.24",
     "@seydx/fix-path": "^5.0.0",
     "ansicolor": "^2.0.3",
     "pick-port": "^2.2.1",
@@ -71,7 +71,7 @@
     "tsyringe": "^4.10.0",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.64.0",
-    "updates": "^17.18.2",
+    "updates": "^17.19.1",
     "vitest": "^4.1.10"
   },
   "author": "seydx (https://github.com/cameraui/common)",
