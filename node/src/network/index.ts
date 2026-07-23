@@ -156,9 +156,12 @@ export function isLanClientAddress(remoteIp: string | undefined, localIp: string
   return false;
 }
 
+const VIRTUAL_INTERFACE = /^(docker|br-|veth|virbr|cni|lxc|lxd)/;
+
 export const fetchViableNetworkAddresses = (): UsableNetworkAddress[] => {
-  const interfaces = Object.values(networkInterfaces())
-    .flat()
+  const interfaces = Object.entries(networkInterfaces())
+    .filter(([name]) => !VIRTUAL_INTERFACE.test(name))
+    .flatMap(([, infos]) => infos ?? [])
     .filter((ni): ni is NetworkInterfaceInfo => ni !== undefined);
 
   const isValidInterface = (ni: NetworkInterfaceInfo) => isValidNetworkAddress(ni.address) && !ni.internal;
