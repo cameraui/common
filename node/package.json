@@ -1,6 +1,6 @@
 {
   "name": "@camera.ui/common",
-  "version": "0.0.51",
+  "version": "0.0.52",
   "description": "camera.ui utilities",
   "type": "module",
   "exports": {
@@ -51,7 +51,6 @@
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run format && npm run build"
   },
   "dependencies": {
-    "@camera.ui/sdk": "~1.2.0",
     "@seydx/fix-path": "^5.0.0",
     "ansicolor": "^2.0.3",
     "pick-port": "^2.2.1",
@@ -59,7 +58,11 @@
     "sdp-transform": "^3.0.0",
     "systeminformation": "^5.33.1"
   },
+  "peerDependencies": {
+    "@camera.ui/sdk": ">=1.2.0"
+  },
   "devDependencies": {
+    "@camera.ui/sdk": "~1.2.0",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "26.1.2",
     "@types/sdp-transform": "^3.0.0",
