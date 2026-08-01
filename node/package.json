@@ -59,10 +59,10 @@
     "systeminformation": "^5.33.1"
   },
   "peerDependencies": {
-    "@camera.ui/sdk": ">=1.2.1"
+    "@camera.ui/sdk": ">=1.2.4"
   },
   "devDependencies": {
-    "@camera.ui/sdk": "~1.2.1",
+    "@camera.ui/sdk": "~1.2.4",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "26.1.2",
     "@types/sdp-transform": "^3.0.0",
