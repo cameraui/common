@@ -6,6 +6,8 @@ export interface SignalHandlerOptions {
   displayName: string;
   logger: LoggerService;
   timeoutDuration?: number;
+  reportErrors?: boolean;
+  reportDirectory?: string;
   closeFunction: () => Promise<void>;
   onSIGUSR2?: () => void;
 }
@@ -15,6 +17,8 @@ export class SignalHandler {
   private isShuttingDown = false;
   private logger: LoggerService;
   private timeoutDuration: number;
+  private reportErrors: boolean;
+  private reportDirectory?: string;
 
   private onSIGUSR2?: () => void;
   private closeFunction: () => Promise<void>;
@@ -23,6 +27,8 @@ export class SignalHandler {
     this.displayName = options.displayName;
     this.logger = options.logger;
     this.timeoutDuration = options.timeoutDuration ?? 5000;
+    this.reportErrors = options.reportErrors ?? true;
+    this.reportDirectory = options.reportDirectory;
 
     this.onSIGUSR2 = options.onSIGUSR2;
     this.closeFunction = options.closeFunction;
@@ -30,11 +36,30 @@ export class SignalHandler {
   }
 
   private setupHandlers(): void {
+    this.enableDiagnosticReports();
+
     process.on('uncaughtException', (error) => this.gracefullyClose('uncaughtException', undefined, error));
     process.on('unhandledRejection', (reason, promise) => this.logError('unhandledRejection', reason, undefined, promise));
     process.on('SIGTERM', () => this.gracefullyClose('SIGTERM'));
     process.on('SIGINT', () => this.gracefullyClose('SIGINT'));
     process.on('SIGUSR2', () => this.gracefullyClose('SIGUSR2'));
+  }
+
+  private enableDiagnosticReports(): void {
+    if (!this.reportErrors) {
+      return;
+    }
+
+    try {
+      process.report.reportOnFatalError = true;
+      process.report.reportOnUncaughtException = true;
+
+      if (this.reportDirectory) {
+        process.report.directory = this.reportDirectory;
+      }
+    } catch (error) {
+      this.logger.debug(this.displayName, `Could not enable diagnostic reports: ${error}`);
+    }
   }
 
   private async gracefullyClose(signal: string, reason?: unknown, error?: NodeJS.ErrnoException | string, promise?: any): Promise<void> {
