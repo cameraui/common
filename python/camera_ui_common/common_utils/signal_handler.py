@@ -69,18 +69,14 @@ class SignalHandler:
                 f"{self.display_name} Failed to gracefully close before timeout. Force quitting!"
             )
         except Exception as e:
-            self.logger.error(
-                f"Error during shutdown: {str(e)}\n{traceback.format_exc()}"
-            )
+            self.logger.error(f"Error during shutdown: {str(e)}\n{traceback.format_exc()}")
         finally:
             self.shutdown_event.set()
             sys.stdout.flush()
             sys.stderr.flush()
             os._exit(1 if signame == "uncaughtException" else 0)
 
-    def handle_exception(
-        self, loop: asyncio.AbstractEventLoop, context: dict[str, Any]
-    ) -> None:
+    def handle_exception(self, loop: asyncio.AbstractEventLoop, context: dict[str, Any]) -> None:
         exception = context.get("exception")
         message = context.get("message")
         task = context.get("task")  # Das Task Objekt
