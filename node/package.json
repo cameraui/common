@@ -56,13 +56,13 @@
     "pick-port": "^2.2.1",
     "rxjs": "^7.8.2",
     "sdp-transform": "^3.0.0",
-    "systeminformation": "^5.33.3"
+    "systeminformation": "^5.33.4"
   },
   "peerDependencies": {
     "@camera.ui/sdk": ">=1.2.15"
   },
   "devDependencies": {
-    "@camera.ui/sdk": "~1.2.31",
+    "@camera.ui/sdk": "~1.2.32",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "26.3.0",
     "@types/sdp-transform": "^3.0.0",
@@ -74,7 +74,7 @@
     "tsyringe": "^4.10.0",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.68.0",
-    "updates": "^18.0.6",
+    "updates": "^18.0.7",
     "vitest": "^4.1.11"
   },
   "author": "seydx (https://github.com/cameraui/common)",
