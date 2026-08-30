@@ -56,13 +56,13 @@
     "pick-port": "^2.2.1",
     "rxjs": "^7.8.2",
     "sdp-transform": "^3.0.0",
-    "systeminformation": "^5.33.4"
+    "systeminformation": "^5.33.6"
   },
   "peerDependencies": {
     "@camera.ui/sdk": ">=1.2.15"
   },
   "devDependencies": {
-    "@camera.ui/sdk": "~1.2.33",
+    "@camera.ui/sdk": "~1.2.35",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "26.4.0",
     "@types/sdp-transform": "^3.0.0",
