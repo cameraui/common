@@ -20,7 +20,7 @@
     "test:python": "cd python && python -m pytest || [ $? -eq 5 ]",
     "test": "npm run test:node && npm run test:python",
     "release": "bash scripts/release.sh",
-    "update": "updates --update ./ && updates --file node,python --update ./"
+    "update": "updates -M npm,pypi,go,cargo,docker,make --update ./ && updates --file node,python --update ./"
   },
   "homepage": "https://github.com/cameraui/common#readme",
   "bugs": {
@@ -36,6 +36,6 @@
     "@types/node": "^26.4.1",
     "tsx": "^4.23.13",
     "typescript": "5.9.3",
-    "updates": "^18.0.7"
+    "updates": "^18.1.0"
   }
 }
