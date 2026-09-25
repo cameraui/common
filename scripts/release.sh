@@ -73,8 +73,17 @@ case "$PKG" in
 esac
 
 bump() {
+  local base="${1%%-*}"
   local IFS='.'
-  read -r ma mi pa <<<"$1"
+  read -r ma mi pa <<<"$base"
+  # a prerelease of the bumped version is released as that version: 0.0.58-beta.2 -> 0.0.58
+  if [ "$base" != "$1" ]; then
+    case "$2" in
+      patch) echo "$base" && return ;;
+      minor) [ "$pa" = 0 ] && echo "$base" && return ;;
+      major) [ "$mi" = 0 ] && [ "$pa" = 0 ] && echo "$base" && return ;;
+    esac
+  fi
   case "$2" in
     major) echo "$((ma + 1)).0.0" ;;
     minor) echo "$ma.$((mi + 1)).0" ;;
