@@ -128,7 +128,7 @@ export function isLanClientAddress(remoteIp: string | undefined, localIp: string
   return false;
 }
 
-const VIRTUAL_INTERFACE = /^(docker|br-|veth|virbr|cni|lxc|lxd)/;
+const VIRTUAL_INTERFACE = /^(docker|br-|veth|virbr|cni|lxc|lxd|hassio)/;
 
 export const fetchViableNetworkAddresses = (): UsableNetworkAddress[] => {
   const interfaces = Object.entries(networkInterfaces())
