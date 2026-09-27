@@ -58,7 +58,7 @@
     "@camera.ui/sdk": ">=1.2.15"
   },
   "devDependencies": {
-    "@camera.ui/sdk": "~1.4.0",
+    "@camera.ui/sdk": "~1.4.1",
     "@seydx/fix-path": "^5.0.0",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "26.6.3",
