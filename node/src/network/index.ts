@@ -128,7 +128,8 @@ export function isLanClientAddress(remoteIp: string | undefined, localIp: string
   return false;
 }
 
-const VIRTUAL_INTERFACE = /^(docker|br-|veth|virbr|cni|lxc|lxd|hassio)/;
+// VPN interfaces (wg, utun, tailscale, zt) stay, remote users reach the server through them
+const VIRTUAL_INTERFACE = /^(docker|br-|veth|virbr|cni|lxc|lxd|hassio|podman|vmnet|vboxnet|cali|flannel|kube|bridge1\d\d)/;
 
 export const fetchViableNetworkAddresses = (): UsableNetworkAddress[] => {
   const interfaces = Object.entries(networkInterfaces())
