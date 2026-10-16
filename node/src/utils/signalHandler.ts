@@ -8,6 +8,7 @@ export interface SignalHandlerOptions {
   timeoutDuration?: number;
   reportErrors?: boolean;
   reportDirectory?: string;
+  ignoreSIGINT?: boolean;
   closeFunction: () => Promise<void>;
   onSIGUSR2?: () => void;
 }
@@ -19,6 +20,7 @@ export class SignalHandler {
   private timeoutDuration: number;
   private reportErrors: boolean;
   private reportDirectory?: string;
+  private ignoreSIGINT: boolean;
 
   private onSIGUSR2?: () => void;
   private closeFunction: () => Promise<void>;
@@ -29,10 +31,23 @@ export class SignalHandler {
     this.timeoutDuration = options.timeoutDuration ?? 5000;
     this.reportErrors = options.reportErrors ?? true;
     this.reportDirectory = options.reportDirectory;
+    this.ignoreSIGINT = options.ignoreSIGINT ?? false;
 
     this.onSIGUSR2 = options.onSIGUSR2;
     this.closeFunction = options.closeFunction;
     this.setupHandlers();
+  }
+
+  public get closing(): boolean {
+    return this.isShuttingDown;
+  }
+
+  public setTimeoutDuration(ms: number): void {
+    this.timeoutDuration = ms;
+  }
+
+  public close(reason: string): Promise<void> {
+    return this.gracefullyClose(reason, undefined, undefined, undefined, reason === 'unknown' ? 'Shutting down' : `Shutting down (${reason})`);
   }
 
   private setupHandlers(): void {
@@ -41,7 +56,9 @@ export class SignalHandler {
     process.on('uncaughtException', (error) => this.gracefullyClose('uncaughtException', undefined, error));
     process.on('unhandledRejection', (reason, promise) => this.logError('unhandledRejection', reason, undefined, promise));
     process.on('SIGTERM', () => this.gracefullyClose('SIGTERM'));
-    process.on('SIGINT', () => this.gracefullyClose('SIGINT'));
+    process.on('SIGINT', () =>
+      this.ignoreSIGINT ? this.logger.debug(this.displayName, 'Ignoring SIGINT, the supervisor stops this process') : this.gracefullyClose('SIGINT'),
+    );
     process.on('SIGUSR2', () => this.gracefullyClose('SIGUSR2'));
   }
 
@@ -62,7 +79,7 @@ export class SignalHandler {
     }
   }
 
-  private async gracefullyClose(signal: string, reason?: unknown, error?: NodeJS.ErrnoException | string, promise?: any): Promise<void> {
+  private async gracefullyClose(signal: string, reason?: unknown, error?: NodeJS.ErrnoException | string, promise?: any, announcement?: string): Promise<void> {
     if (this.onSIGUSR2 && signal === 'SIGUSR2') {
       this.onSIGUSR2();
     }
@@ -72,7 +89,7 @@ export class SignalHandler {
     }
 
     this.isShuttingDown = true;
-    this.logger.log(this.displayName, `Received ${signal}. Stopping...`);
+    this.logger.log(this.displayName, announcement ?? `Received ${signal}. Stopping...`);
 
     this.logError(signal, reason, error, promise);
 
@@ -81,7 +98,7 @@ export class SignalHandler {
     } catch (err) {
       this.logger.warn(this.displayName, `Failed to gracefully close: ${err.message}. Force quitting!`);
     } finally {
-      process.exit(error ? 1 : 0);
+      process.exit(error ? 1 : undefined);
     }
   }
 

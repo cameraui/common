@@ -19,7 +19,7 @@ class SignalHandlerOptions(TypedDict):
 
     display_name: str
     logger: LoggerService
-    timeout_duration: int
+    timeout_duration: float
     close_function: Callable[..., Coroutine[Any, Any, Any]]
 
 
@@ -28,7 +28,7 @@ class SignalHandler:
 
     display_name: str
     logger: LoggerService
-    timeout_duration: int
+    timeout_duration: float
     close_function: Callable[..., Coroutine[Any, Any, Any]]
     is_shutting_down: bool
     shutdown_event: asyncio.Event
