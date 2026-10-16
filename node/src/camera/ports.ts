@@ -74,6 +74,10 @@ export async function pickPort({ type, ip = '0.0.0.0', minPort = 10000, maxPort 
 
     try {
       await (type === 'tcp' ? bindTcp(ip, port) : bindUdp(ip, port, family));
+      // macOS lets a wildcard bind succeed while another process holds the port on loopback
+      if (ip === '0.0.0.0') {
+        await (type === 'tcp' ? bindTcp('127.0.0.1', port) : bindUdp('127.0.0.1', port, 4));
+      }
 
       lastReservedPort = port;
       setTimeout(() => reserved.delete(hash), reserveTimeout * 1000).unref();
