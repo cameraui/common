@@ -63,6 +63,17 @@ export function getNpmPath(): string[] {
   return ['npm'];
 }
 
+export function npmCommand(): { command: string; args: string[] } {
+  const [npm] = getNpmPath();
+  if (osPlatform() === 'win32' && npm.toLowerCase().endsWith('.cmd')) {
+    const cli = join(dirname(npm), 'node_modules', 'npm', 'bin', 'npm-cli.js');
+    if (existsSync(cli)) {
+      return { command: process.execPath, args: [cli] };
+    }
+  }
+  return { command: npm, args: [] };
+}
+
 export function getNpmGlobalModulesDirectory(): string {
   const npmPath = getNpmPath().join(' ');
   const isWindows = osPlatform() === 'win32';
