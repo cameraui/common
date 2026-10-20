@@ -13,8 +13,7 @@ const SHELL_ENV = {
   ZSH_TMUX_AUTOSTART: 'false',
 };
 
-// an interactive shell can ignore SIGTERM and wait for input forever, which would
-// freeze the whole process on every npm lookup
+// an interactive shell can wait for input forever and freeze every npm lookup
 const SHELL_TIMEOUT_MS = 10_000;
 
 const FALLBACK_PATH = ['./node_modules/.bin', '/.nodebrew/current/bin', '/usr/local/bin'];

@@ -1,12 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-# Bump a package's version, commit it, tag it and push. The matching GitHub
-# Actions release workflow then runs the full test suite and publishes.
-#
-#   node    -> bumps node/package.json,      tag node-vX.Y.Z   (npm)
-#   python  -> bumps python/pyproject.toml,   tag python-vX.Y.Z (PyPI)
-
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 GREEN='\033[0;32m'
@@ -51,7 +45,6 @@ case "$PKG" in node | python) ;; *) usage ;; esac
 
 cd "$ROOT"
 
-# Safety: clean tree, on main, not behind origin.
 if [ -n "$(git status --porcelain)" ]; then
   echo -e "${RED}Working tree not clean - commit or stash first.${NC}"
   exit 1
@@ -76,7 +69,7 @@ bump() {
   local base="${1%%-*}"
   local IFS='.'
   read -r ma mi pa <<<"$base"
-  # a prerelease of the bumped version is released as that version: 0.0.58-beta.2 -> 0.0.58
+  # a prerelease of the bumped version releases as that version, 0.0.58-beta.2 gives 0.0.58
   if [ "$base" != "$1" ]; then
     case "$2" in
       patch) echo "$base" && return ;;
@@ -96,8 +89,7 @@ case "$SPEC" in
   *) NEW="$SPEC" ;;
 esac
 
-# npm takes a prerelease and publishes it under the beta dist-tag, PyPI versions
-# stay plain so the tag keeps matching pyproject.toml after PEP 440 normalization
+# PyPI versions stay plain so the tag matches pyproject.toml after PEP 440 normalization
 case "$PKG" in
   node) VERSION_PATTERN='^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$' ;;
   python) VERSION_PATTERN='^[0-9]+\.[0-9]+\.[0-9]+$' ;;

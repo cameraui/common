@@ -1,5 +1,3 @@
-"""Task set utilities for managing async tasks."""
-
 from __future__ import annotations
 
 import asyncio
@@ -8,8 +6,6 @@ from typing import Any
 
 
 class TaskSet:
-    """A set of async tasks that can be managed together."""
-
     tasks: set[asyncio.Task[Any]]
     name: str | None
 

@@ -51,8 +51,8 @@ export class PidRegistry {
 
   public add(entry: PidRegistryEntry): PidRegistryEntry {
     this.entries.push(entry);
-    void this.persist();
-    void this.resolveIdentity(entry);
+    this.persist();
+    this.resolveIdentity(entry);
     return entry;
   }
 
@@ -64,7 +64,7 @@ export class PidRegistry {
     const before = this.entries.length;
     this.entries = this.entries.filter((entry) => entry.pid !== pid);
     if (this.entries.length !== before) {
-      void this.persist();
+      this.persist();
     }
   }
 
@@ -266,12 +266,12 @@ function killOrphanedGroup(entry: PidRegistryEntry, initStartTime: string | unde
   }
 }
 
-// false when the two can't be ordered; the /proc form is boot time plus ticks, ps gives lstart
 function startedSince(start: string | undefined, since: string | undefined): boolean {
   if (!start || !since) {
     return false;
   }
 
+  // the /proc form is btime:ticks, ps gives lstart
   const proc = /^(\d+):(\d+)$/;
   const [a, b] = [proc.exec(start), proc.exec(since)];
   if (a && b) {
@@ -322,7 +322,7 @@ async function readFromProc(pids: number[]): Promise<Map<number, ProcessSnapshot
       const exe = await readlink(`/proc/${pid}/exe`).catch(() => '');
       const name = exe ? basename(exe.replace(/\s+\(deleted\)$/, '')) : comm;
 
-      // field 22 counts clock ticks since boot; the comm field before it may contain spaces and parentheses
+      // field 22 is the start in ticks since boot, the comm field before it can hold spaces and parentheses
       const stat = await readFile(`/proc/${pid}/stat`, 'utf8').catch(() => '');
       const ticks = stat.slice(stat.lastIndexOf(')') + 2).split(' ')[19];
 

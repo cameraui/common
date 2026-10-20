@@ -9,14 +9,12 @@ type Color = 'red' | 'yellow' | 'green' | 'magenta' | 'blue' | 'cyan' | 'gray' |
 
 const ESCAPE = String.fromCharCode(27);
 
-// camera.ui logs from a background process, where styleText would drop the colors
-// because stdout is not a TTY. A message that carries its own codes (plugin and
-// ffmpeg output does) gets its resets turned back into the outer color, so the
-// rest of the line keeps it
 function paint(color: Color, text: string): string {
   const [open, close] = inspect.colors[color];
+  // plugin and ffmpeg output carry their own codes, their resets fall back to the outer color
   const nested = text.replaceAll(`${ESCAPE}[${close}m`, `${ESCAPE}[${open}m`);
 
+  // stdout is no TTY in the background process, styleText would drop the colors
   return styleText(color, nested, { validateStream: false });
 }
 
@@ -38,16 +36,11 @@ export class Logger extends EventEmitter {
   public debugEnabled = false;
   public traceEnabled = false;
 
-  /** Target ID for log routing (camera ID, plugin ID) */
   public targetId?: string;
-  /** Target type for log routing */
   public targetType?: LogTargetType;
-  /** Plugin ID for routing camera logs to plugin log files */
   public pluginId?: string;
 
-  /** Whether this logger runs in a child process (outputs JSON to stdout) */
   private isChildProcess = false;
-  /** Source identifier for log entries */
   private source: LogSource = 'main';
 
   constructor(options?: LoggerOptions) {
@@ -64,18 +57,11 @@ export class Logger extends EventEmitter {
     this.pluginId = options?.pluginId;
   }
 
-  /**
-   * Configure this logger for child process mode.
-   * In child mode, logs are written as JSON to stdout instead of console.log
-   */
   public setChildProcessMode(enabled: boolean): void {
     this.isChildProcess = enabled;
     this.source = enabled ? 'child' : 'main';
   }
 
-  /**
-   * Create a child logger that inherits settings from this logger
-   */
   public createLogger(options?: LoggerOptions): Logger {
     const logger = new Logger({
       prefix: options?.prefix ?? this.prefix,
@@ -89,11 +75,9 @@ export class Logger extends EventEmitter {
       pluginId: options?.pluginId ?? this.pluginId,
     });
 
-    // Inherit child process mode
     logger.isChildProcess = this.isChildProcess;
     logger.source = this.source;
 
-    // Forward log events to parent logger
     logger.on('log', (entry: LogEntry) => {
       this.emit('log', entry);
     });
@@ -101,16 +85,10 @@ export class Logger extends EventEmitter {
     return logger;
   }
 
-  /**
-   * Listen for log events
-   */
   public onLog(callback: LogEventCallback): void {
     this.on('log', callback);
   }
 
-  /**
-   * Remove log event listener
-   */
   public offLog(callback: LogEventCallback): void {
     this.off('log', callback);
   }
@@ -147,23 +125,15 @@ export class Logger extends EventEmitter {
     }
   }
 
-  /**
-   * Log raw content without any formatting (pass-through mode).
-   * Used for forwarding already-formatted output from child processes.
-   */
   public raw(...args: any[]): void {
     const message = args.map((arg) => (typeof arg === 'string' ? arg : String(arg))).join(' ');
 
-    // Raw logs bypass normal formatting - just output as-is
     if (this.isChildProcess) {
-      // Child process: still wrap in JSON for parent to parse
       const entry = this.createEntry('raw', args);
       this.writeToStdout(entry);
     } else {
-      // Main process: output directly to console without formatting
       console.log(message);
 
-      // Create entry for file logging and event emission (with minimal formatting)
       const entry: LogEntry = {
         timestamp: Date.now(),
         level: 'raw',
@@ -178,25 +148,17 @@ export class Logger extends EventEmitter {
     }
   }
 
-  /**
-   * Core logging method that creates entry and routes it
-   */
   private writeLog(level: LogLevel, args: any[]): void {
     const entry = this.createEntry(level, args);
 
     if (this.isChildProcess) {
-      // Child process: write JSON to stdout
       this.writeToStdout(entry);
     } else {
-      // Main process: write to console and emit event
       this.writeToConsole(entry);
       this.emit('log', entry);
     }
   }
 
-  /**
-   * Create a structured log entry
-   */
   private createEntry(level: LogLevel, args: any[]): LogEntry {
     const formattedArgs = this.formatArgs(args);
     const message = formattedArgs.join(' ');
@@ -215,64 +177,46 @@ export class Logger extends EventEmitter {
     };
   }
 
-  /**
-   * Write log entry to stdout as JSON (for child processes)
-   */
   private writeToStdout(entry: LogEntry): void {
     const message: ChildLogMessage = { type: 'log', entry };
     process.stdout.write(JSON.stringify(message) + '\n');
   }
 
-  /**
-   * Write formatted log to console (for main process)
-   */
   private writeToConsole(entry: LogEntry): void {
     const formatted = this.formatForConsole(entry);
     console.log(...formatted);
   }
 
-  /**
-   * Format a log entry for console output with ANSI colors
-   */
   public formatForConsole(entry: LogEntry): string[] {
-    // For raw entries, just return the message as-is (it's already formatted)
     if (entry.level === 'raw') {
       return [entry.message];
     }
 
     const parts: string[] = [];
 
-    // Timestamp
     if (!this.disableTimestamps) {
       parts.push(`[${this.formatTimestamp(entry.timestamp)}]`);
     }
 
-    // Prefix
     if (!this.disablePrefix && entry.prefix) {
       parts.push(paint('blue', `[${entry.prefix}]`));
     }
 
-    // Suffix
     if (entry.suffix) {
       parts.push(paint('cyan', `[${entry.suffix}]`));
     }
 
-    // Level prefix and colored message
     const levelPrefix = Logger.LEVEL_PREFIXES[entry.level];
     if (levelPrefix) {
       parts.push(levelPrefix);
     }
 
-    // Message with appropriate color
     const coloredMessage = this.colorizeMessage(entry.level, entry.message);
     parts.push(coloredMessage);
 
     return parts;
   }
 
-  /**
-   * Apply color to message based on log level
-   */
   private colorizeMessage(level: LogLevel, message: string): string {
     switch (level) {
       case 'debug':
@@ -291,13 +235,10 @@ export class Logger extends EventEmitter {
     }
   }
 
-  /**
-   * Format arguments for logging
-   */
   private formatArgs(args: any[]): string[] {
     const inspectOptions = {
       depth: 2,
-      colors: !this.isChildProcess, // No colors in JSON mode
+      colors: !this.isChildProcess,
       compact: 3,
       breakLength: 80,
       maxArrayLength: 100,
@@ -325,9 +266,6 @@ export class Logger extends EventEmitter {
     });
   }
 
-  /**
-   * Format timestamp for display
-   */
   private formatTimestamp(timestamp: number): string {
     const date = new Date(timestamp);
     const day = date.getDate().toString().padStart(2, '0');
@@ -339,19 +277,13 @@ export class Logger extends EventEmitter {
     return `${day}.${month}.${year}, ${hours}:${minutes}:${seconds}`;
   }
 
-  /**
-   * Format a log entry as a colored string (for terminal/WebSocket output)
-   * Preserves ANSI codes for terminal display
-   */
   public static formatWithColors(entry: LogEntry): string {
-    // For raw entries, just return the message as-is
     if (entry.level === 'raw') {
       return entry.message;
     }
 
     const parts: string[] = [];
 
-    // Timestamp
     const date = new Date(entry.timestamp);
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -361,23 +293,19 @@ export class Logger extends EventEmitter {
     const seconds = date.getSeconds().toString().padStart(2, '0');
     parts.push(`[${day}.${month}.${year}, ${hours}:${minutes}:${seconds}]`);
 
-    // Prefix with color
     if (entry.prefix) {
       parts.push(paint('blue', `[${entry.prefix}]`));
     }
 
-    // Suffix with color
     if (entry.suffix) {
       parts.push(paint('cyan', `[${entry.suffix}]`));
     }
 
-    // Level prefix with background color
     const levelPrefix = Logger.LEVEL_PREFIXES[entry.level];
     if (levelPrefix) {
       parts.push(levelPrefix);
     }
 
-    // Message with appropriate color
     let coloredMessage: string;
     switch (entry.level) {
       case 'debug':
@@ -404,20 +332,13 @@ export class Logger extends EventEmitter {
     return parts.join(' ');
   }
 
-  /**
-   * Format a log entry as a plain text line (for file output)
-   * Strips ANSI codes and formats consistently
-   */
   public static formatAsText(entry: LogEntry): string {
-    // For raw entries, just return the message as-is (it's already formatted)
     if (entry.level === 'raw') {
-      // Strip ANSI codes from the message
       return entry.message.replace(/\x1b\[[0-9;]*m/g, '');
     }
 
     const parts: string[] = [];
 
-    // Timestamp
     const date = new Date(entry.timestamp);
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -427,17 +348,14 @@ export class Logger extends EventEmitter {
     const seconds = date.getSeconds().toString().padStart(2, '0');
     parts.push(`[${day}.${month}.${year}, ${hours}:${minutes}:${seconds}]`);
 
-    // Prefix
     if (entry.prefix) {
       parts.push(`[${entry.prefix}]`);
     }
 
-    // Suffix
     if (entry.suffix) {
       parts.push(`[${entry.suffix}]`);
     }
 
-    // Level prefix
     const levelPrefixes: Record<LogLevel, string> = {
       error: ' ERROR ',
       warn: ' WARN ',
@@ -453,16 +371,12 @@ export class Logger extends EventEmitter {
       parts.push(levelPrefix);
     }
 
-    // Message (strip ANSI codes)
     const cleanMessage = entry.message.replace(/\x1b\[[0-9;]*m/g, '');
     parts.push(cleanMessage);
 
     return parts.join(' ');
   }
 
-  /**
-   * Parse a JSON log line from a child process
-   */
   public static parseChildLog(line: string): LogEntry | null {
     try {
       const parsed = JSON.parse(line);
@@ -470,7 +384,7 @@ export class Logger extends EventEmitter {
         return parsed.entry as LogEntry;
       }
     } catch {
-      // Not a valid JSON log line
+      // not a log line
     }
     return null;
   }

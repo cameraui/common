@@ -26,22 +26,11 @@ export interface FfmpegArgs {
   supported: boolean;
 }
 
-/**
- * Check if FFmpeg supports a specific codec
- * @param codec Codec name to check
- * @param ffmpegPath Path to FFmpeg executable
- * @returns True if codec is supported
- */
 export async function doesFfmpegSupportCodec(codec: string, ffmpegPath: string): Promise<boolean> {
   const output = await execAwait(`${ffmpegPath} -codecs`);
   return output.stdout.includes(codec);
 }
 
-/**
- * Check if FFmpeg is installed and accessible
- * @param ffmpegPath Path to FFmpeg executable
- * @returns True if FFmpeg is available
- */
 export async function isFfmpegInstalled(ffmpegPath: string): Promise<boolean> {
   try {
     await execAwait(`${ffmpegPath} -codecs`);
@@ -51,12 +40,6 @@ export async function isFfmpegInstalled(ffmpegPath: string): Promise<boolean> {
   }
 }
 
-/**
- * Get hardware acceleration information for FFmpeg
- * @param ffmpegPath Path to FFmpeg executable
- * @param options Hardware acceleration options
- * @returns FFmpeg arguments for hardware acceleration
- */
 export async function getHwaccelInfo(ffmpegPath: string, options: HWAccelOptions): Promise<FfmpegArgs[]> {
   const { targetCodec = 'h264', keepOnHardware = false, scale, pixelFormat } = options;
 

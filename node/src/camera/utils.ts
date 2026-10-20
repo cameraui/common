@@ -16,7 +16,6 @@ import type {
 export function generateSdp(videos: VideoStreamInfo[], audios: AudioStreamInfo[]): string {
   const sdpLines: string[] = ['v=0', 'o=- ' + Date.now() + ' ' + Math.floor(Date.now() / 1000) + ' IN IP4 127.0.0.1', 's=Stream', 'c=IN IP4 0.0.0.0', 't=0 0'];
 
-  // Video track
   for (const video of videos) {
     const videoCodec = video.codec;
     const videoPayloadType = video.properties.payloadType;
@@ -35,7 +34,6 @@ export function generateSdp(videos: VideoStreamInfo[], audios: AudioStreamInfo[]
     sdpLines.push(`a=${videoDirection}`);
   }
 
-  // Audio track
   for (const audio of audios) {
     const audioCodec = audio.codec;
     const audioPayloadType = audio.properties.payloadType;
@@ -77,7 +75,6 @@ export function extractSdpInfo(producers: { sdp?: string }[]): {
     for (let i = 0; i < sdpLines.length; i++) {
       const line = sdpLines[i].trim();
 
-      // Check for media type
       if (line.startsWith('m=')) {
         const mediaParts = line.split(' ');
         if (mediaParts.length >= 4) {
@@ -89,7 +86,6 @@ export function extractSdpInfo(producers: { sdp?: string }[]): {
           }
         }
       } else if (currentMedia && line.startsWith('a=rtpmap:')) {
-        // Check for codec information
         const rtpMapMatch = /a=rtpmap:(\d+)\s+([^/]+)\/(\d+)(?:\/(\d+))?/.exec(line);
         if (rtpMapMatch) {
           const payload = parseInt(rtpMapMatch[1], 10);
@@ -97,7 +93,6 @@ export function extractSdpInfo(producers: { sdp?: string }[]): {
           const clockRate = parseInt(rtpMapMatch[3], 10);
           const channels = rtpMapMatch[4] ? parseInt(rtpMapMatch[4], 10) : 1;
 
-          // Initialize codec object if not present
           if (!sdpInfo[currentMedia][codecName]) {
             sdpInfo[currentMedia][codecName] = {};
           }
@@ -109,24 +104,19 @@ export function extractSdpInfo(producers: { sdp?: string }[]): {
             sdpInfo[currentMedia][codecName].channels = channels;
           }
 
-          // Set current codec - we'll use this for subsequent fmtp lines
           currentCodec = codecName;
         }
       } else if (currentMedia && currentCodec && line.startsWith('a=fmtp:')) {
-        // Check for fmtp information
         const fmtpMatch = /a=fmtp:(\d+)\s+(.*)/.exec(line);
         if (fmtpMatch) {
           const payload = parseInt(fmtpMatch[1], 10);
 
-          // Check if this fmtp line is for the current codec
           if (sdpInfo[currentMedia][currentCodec]?.payload === payload) {
             const params = fmtpMatch[2];
 
-            // Store fmtp params
             sdpInfo[currentMedia][currentCodec].fmtp = params;
-            sdpInfo[currentMedia][currentCodec].fmtpPayload = payload; // Store payload for reference
+            sdpInfo[currentMedia][currentCodec].fmtpPayload = payload;
 
-            // For H.264/H.265, extract profile-level-id
             if ((currentCodec === 'H264' || currentCodec === 'H265') && currentMedia === 'video') {
               const paramMap: Record<string, string> = {};
               const paramPairs = params.split(';');
@@ -142,7 +132,6 @@ export function extractSdpInfo(producers: { sdp?: string }[]): {
                 sdpInfo[currentMedia][currentCodec].profileLevelId = paramMap['profile-level-id'];
               }
 
-              // For H.264/H,265, extract sprop-parameter-sets, sprop-vps, sprop-sps, sprop-pps
               ['sprop-parameter-sets', 'sprop-vps', 'sprop-sps', 'sprop-pps'].forEach((param) => {
                 if (paramMap[param]) {
                   sdpInfo[currentMedia!][currentCodec][param] = paramMap[param];
@@ -150,7 +139,6 @@ export function extractSdpInfo(producers: { sdp?: string }[]): {
               });
             }
 
-            // For MPEG4-GENERIC, extract config
             if (currentCodec === 'MPEG4-GENERIC' && currentMedia === 'audio') {
               const paramMap: Record<string, string> = {};
               const paramPairs = params.split(';');
@@ -204,17 +192,14 @@ export function getAudioCodecProperties(codecName: AudioCodec, rtp?: RTPInfo, fm
 
   const defaultProps = defaultCodecProperties[codecName] ?? fallbackProperties;
 
-  // Take data from RTP if available, otherwise use default
   const sampleRate = rtp.rate ?? defaultProps.sampleRate;
   const channels = rtp.encoding ?? defaultProps.channels;
   const payloadType = rtp.payload ?? defaultProps.payloadType;
 
-  // If fmtp is available, set the payload value to the main payload type
   let fmtpInfo = fmtp;
   if (fmtpInfo) {
     fmtpInfo = { ...fmtpInfo, payload: payloadType };
   } else if (defaultProps.fmtpInfo) {
-    // If no fmtp is specified, but available by default, copy and update the payload type
     fmtpInfo = {
       ...defaultProps.fmtpInfo,
       payload: payloadType,
@@ -248,16 +233,13 @@ export function getVideoCodecProperties(codecName: VideoCodec, rtp?: RTPInfo, fm
 
   const defaultProps = defaultCodecProperties[codecName] ?? fallbackProperties;
 
-  // Take data from RTP if available, otherwise use default
   const clockRate = rtp.rate ?? defaultProps.clockRate;
   const payloadType = rtp.payload ?? defaultProps.payloadType;
 
-  // If fmtp is available, set the payload value to the main payload type
   let fmtpInfo = fmtp;
   if (fmtpInfo) {
     fmtpInfo = { ...fmtpInfo, payload: payloadType };
   } else if (defaultProps.fmtpInfo) {
-    // If no fmtp is specified, but available by default, copy and update the payload type
     fmtpInfo = {
       ...defaultProps.fmtpInfo,
       payload: payloadType,
@@ -291,7 +273,6 @@ export function extractLevelFromProfileLevelId(profileLevelId: string): number |
   if (!profileLevelId || profileLevelId.length < 6) return undefined;
 
   try {
-    // Take last 2 charactersas hex and convert to number
     const levelHex = profileLevelId.substring(profileLevelId.length - 2);
     return parseInt(levelHex, 16);
   } catch {
@@ -309,7 +290,6 @@ export function createProfileLevelId(profile: string, level: number): string | u
   const profileId = profileMap[profile];
   if (!profileId) return undefined;
 
-  // Format level as hex, ensure it's 2 digits
   const levelHex = level.toString(16).padStart(2, '0');
 
   return `${profileId}00${levelHex}`;
@@ -490,7 +470,7 @@ export function mapDirection(direction: string): 'sendonly' | 'recvonly' | 'send
     case 'inactive':
       return direction;
     default:
-      return 'sendrecv'; // Default to sendrecv if direction is unknown
+      return 'sendrecv';
   }
 }
 

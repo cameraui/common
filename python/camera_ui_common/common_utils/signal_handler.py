@@ -1,5 +1,3 @@
-"""Signal handling utilities for graceful shutdown."""
-
 from __future__ import annotations
 
 import asyncio
@@ -15,8 +13,6 @@ from camera_ui_sdk import LoggerService
 
 
 class SignalHandlerOptions(TypedDict):
-    """Options for configuring the signal handler."""
-
     display_name: str
     logger: LoggerService
     timeout_duration: float
@@ -24,8 +20,6 @@ class SignalHandlerOptions(TypedDict):
 
 
 class SignalHandler:
-    """Handles system signals for graceful shutdown."""
-
     display_name: str
     logger: LoggerService
     timeout_duration: float
@@ -79,14 +73,13 @@ class SignalHandler:
     def handle_exception(self, loop: asyncio.AbstractEventLoop, context: dict[str, Any]) -> None:
         exception = context.get("exception")
         message = context.get("message")
-        task = context.get("task")  # Das Task Objekt
+        task = context.get("task")
 
         if isinstance(exception, asyncio.CancelledError) and self.is_shutting_down:
             return
 
         error_message = f"{self.display_name} Caught exception: {message}"
         if task:
-            # Task Stack ausgeben
             stack = task.get_stack()
             if stack:
                 error_message += "\nTask Stack:"

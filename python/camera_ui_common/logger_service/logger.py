@@ -1,5 +1,3 @@
-"""Logger service for structured logging."""
-
 from __future__ import annotations
 
 import json
@@ -19,8 +17,6 @@ LogSource = Literal["main", "child"]
 
 
 class LogEntry(TypedDict):
-    """A structured log entry."""
-
     timestamp: int
     level: LogLevel
     prefix: str
@@ -34,15 +30,11 @@ class LogEntry(TypedDict):
 
 
 class ChildLogMessage(TypedDict):
-    """Message format for child process logs."""
-
     type: Literal["log"]
     entry: LogEntry
 
 
 class LoggerOptions(TypedDict, total=False):
-    """Options for configuring the logger."""
-
     prefix: str | None
     suffix: str | None
     disable_prefix: bool | None
@@ -55,8 +47,6 @@ class LoggerOptions(TypedDict, total=False):
 
 
 class LoggerService:
-    """A structured logging service with support for child process mode."""
-
     prefix: str
     suffix: str | None
     target_id: str | None
@@ -68,7 +58,6 @@ class LoggerService:
     debug_enabled: bool
     trace_enabled: bool
 
-    # Whether to output JSON (for parent process) or formatted text (for local debugging)
     _is_child_process: bool = True
 
     def __init__(self, options: LoggerOptions | None = None) -> None:
@@ -84,14 +73,9 @@ class LoggerService:
         self.trace_enabled = cast(bool, options.get("trace_enabled", False) if options else False)
 
     def set_child_process_mode(self, enabled: bool) -> None:
-        """
-        Set whether this logger runs in child process mode.
-        In child mode, logs are output as JSON to stdout.
-        """
         self._is_child_process = enabled
 
     def create_logger(self, options: LoggerOptions | None = None) -> LoggerService:
-        """Create a child logger that inherits settings from this logger."""
         logger_options: LoggerOptions = {
             "prefix": options.get("prefix", self.prefix) if options else self.prefix,
             "suffix": options.get("suffix", self.suffix) if options else self.suffix,
@@ -142,18 +126,14 @@ class LoggerService:
         self._write_log("raw", args)
 
     def _write_log(self, level: LogLevel, args: tuple[Any, ...]) -> None:
-        """Core logging method that creates entry and routes it."""
         entry = self._create_entry(level, args)
 
         if self._is_child_process:
-            # Child process: write JSON to stdout
             self._write_to_stdout(entry)
         else:
-            # Local mode: write formatted to console
             self._write_to_console(entry)
 
     def _create_entry(self, level: LogLevel, args: tuple[Any, ...]) -> LogEntry:
-        """Create a structured log entry."""
         formatted_args = self._format_args(args)
         message = " ".join(formatted_args)
 
@@ -171,46 +151,37 @@ class LoggerService:
         )
 
     def _write_to_stdout(self, entry: LogEntry) -> None:
-        """Write log entry to stdout as JSON."""
         message: ChildLogMessage = {"type": "log", "entry": entry}
         json_line = json.dumps(message, ensure_ascii=False)
         print(json_line, flush=True)
 
     def _write_to_console(self, entry: LogEntry) -> None:
-        """Write formatted log to console."""
         formatted = self._format_for_console(entry)
         print(*formatted)
 
     def _format_for_console(self, entry: LogEntry) -> list[str]:
-        """Format a log entry for console output with ANSI colors."""
         parts: list[str] = []
 
-        # Timestamp
         if not self.disable_timestamps:
             parts.append(f"[{self._format_timestamp(entry['timestamp'])}]")
 
-        # Prefix
         if not self.disable_prefix and entry.get("prefix"):
             parts.append(ansicolor.blue(f"[{entry['prefix']}]"))
 
-        # Suffix
         if entry.get("suffix"):
             parts.append(ansicolor.cyan(f"[{entry['suffix']}]"))
 
-        # Level prefix and colored message
         level = entry["level"]
         level_prefix = self._get_level_prefix(level)
         if level_prefix:
             parts.append(level_prefix)
 
-        # Message with appropriate color
         colored_message = self._colorize_message(level, entry["message"])
         parts.append(colored_message)
 
         return parts
 
     def _get_level_prefix(self, level: LogLevel) -> str:
-        """Get the level prefix badge."""
         prefixes = {
             "error": ansicolor.bgRed(" ERROR "),
             "warn": ansicolor.bgYellow(" WARN "),
@@ -224,7 +195,6 @@ class LoggerService:
         return prefixes.get(level, "")
 
     def _colorize_message(self, level: LogLevel, message: str) -> str:
-        """Apply color to message based on log level."""
         if level in ("debug", "trace"):
             return ansicolor.darkGray(message)
         elif level == "warn":
@@ -238,7 +208,6 @@ class LoggerService:
         return message
 
     def _format_args(self, args: tuple[Any, ...]) -> list[str]:
-        """Format arguments for logging."""
         formatted_args: list[str] = []
         for arg in args:
             if isinstance(arg, BaseException):
@@ -257,7 +226,6 @@ class LoggerService:
         return formatted_args
 
     def _format_timestamp(self, timestamp: int) -> str:
-        """Format timestamp for display."""
         try:
             dt = datetime.fromtimestamp(timestamp / 1000)
             return dt.strftime("%d.%m.%Y, %H:%M:%S")
@@ -266,25 +234,20 @@ class LoggerService:
 
     @staticmethod
     def format_as_text(entry: LogEntry) -> str:
-        """Format a log entry as plain text (for file output)."""
         parts: list[str] = []
 
-        # Timestamp
         try:
             dt = datetime.fromtimestamp(entry["timestamp"] / 1000)
             parts.append(f"[{dt.strftime('%d.%m.%Y, %H:%M:%S')}]")
         except Exception:
             parts.append("[Unknown]")
 
-        # Prefix
         if entry.get("prefix"):
             parts.append(f"[{entry['prefix']}]")
 
-        # Suffix
         if entry.get("suffix"):
             parts.append(f"[{entry['suffix']}]")
 
-        # Level prefix
         level_prefixes = {
             "error": " ERROR ",
             "warn": " WARN ",
@@ -299,14 +262,12 @@ class LoggerService:
         if level_prefix:
             parts.append(level_prefix)
 
-        # Message
         parts.append(entry["message"])
 
         return " ".join(parts)
 
     @staticmethod
     def parse_child_log(line: str) -> LogEntry | None:
-        """Parse a JSON log line from a child process."""
         try:
             parsed = json.loads(line)
             if parsed.get("type") == "log" and parsed.get("entry"):

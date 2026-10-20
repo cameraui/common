@@ -34,7 +34,6 @@ export function getNpmPath(): string[] {
   fixPath();
 
   if (osPlatform() === 'win32') {
-    // if running on windows find the full path to npm
     const windowsNpmPath = [
       join(process.env.APPDATA!, 'npm/npm.cmd'),
       join(process.env.ProgramFiles!, 'nodejs/npm.cmd'),
@@ -140,10 +139,9 @@ export function getUserHomeDir(asUser?: string): string {
       return process.env.HOME ?? homedir();
     }
   } catch {
-    // Fallback
+    // ignore
   }
 
-  // Fallback
   return homedir();
 }
 

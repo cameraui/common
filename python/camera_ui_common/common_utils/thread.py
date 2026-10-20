@@ -1,5 +1,3 @@
-"""Thread utilities for running blocking operations."""
-
 from __future__ import annotations
 
 import asyncio
@@ -13,6 +11,5 @@ toThreadExecutor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=2, thread_
 
 
 async def to_thread(f: Callable[[], T]) -> T:
-    """Run a blocking function in a thread pool."""
     loop = asyncio.get_running_loop()
     return await loop.run_in_executor(toThreadExecutor, f)

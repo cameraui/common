@@ -1,5 +1,3 @@
-"""Reactive property utilities."""
-
 from __future__ import annotations
 
 from copy import deepcopy
@@ -11,8 +9,6 @@ T = TypeVar("T")
 
 
 class ReactiveProperty(Generic[T]):
-    """A reactive property that wraps a BehaviorSubject with observable access."""
-
     __subject: BehaviorSubject[T]
     observable: Observable[T]
 

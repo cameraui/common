@@ -11,7 +11,6 @@ class AnsicolorMethods:
 
 
 class Ansicolor:
-    # Foreground colors
     default: AnsicolorMethods = AnsicolorMethods("39")
     white: AnsicolorMethods = AnsicolorMethods("97")
     black: AnsicolorMethods = AnsicolorMethods("30")
@@ -31,14 +30,12 @@ class Ansicolor:
     lightMagenta: AnsicolorMethods = AnsicolorMethods("95")
     lightCyan: AnsicolorMethods = AnsicolorMethods("96")
 
-    # Text styles
     bright: AnsicolorMethods = AnsicolorMethods("1", "22")
     dim: AnsicolorMethods = AnsicolorMethods("2", "22")
     italic: AnsicolorMethods = AnsicolorMethods("3", "23")
     underline: AnsicolorMethods = AnsicolorMethods("4", "24")
     inverse: AnsicolorMethods = AnsicolorMethods("7", "27")
 
-    # Background colors
     bgDefault: AnsicolorMethods = AnsicolorMethods("49", "49")
     bgWhite: AnsicolorMethods = AnsicolorMethods("107", "49")
     bgBlack: AnsicolorMethods = AnsicolorMethods("40", "49")

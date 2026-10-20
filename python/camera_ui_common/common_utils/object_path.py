@@ -1,5 +1,3 @@
-"""Object path utilities for nested object access."""
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -9,14 +7,12 @@ Path = Sequence[int | str] | str | int
 
 
 def is_empty(value: list[int] | list[str] | Sequence[int | str] | None) -> bool:
-    """Check if a sequence is empty or None."""
     if value is None:
         return True
     return len(value) == 0
 
 
 def get_key(key: str | int) -> int | str:
-    """Convert a string key to int if it's a digit."""
     if isinstance(key, int):
         return key
     if key.isdigit():
@@ -25,11 +21,8 @@ def get_key(key: str | int) -> int | str:
 
 
 class ObjectPath:
-    """Utility class for accessing and modifying nested objects."""
-
     @staticmethod
     def delete(obj: dict[Any, Any] | list[Any], path: Path) -> dict[Any, Any] | list[Any]:
-        """Delete a value at the specified path."""
         if isinstance(path, int):
             path = [path]
         elif isinstance(path, str):
@@ -60,7 +53,6 @@ class ObjectPath:
 
     @staticmethod
     def has(obj: dict[Any, Any] | list[Any], path: Path) -> bool:
-        """Check if a path exists in the object."""
         if isinstance(path, int):
             path = [path]
         elif isinstance(path, str):
@@ -90,12 +82,9 @@ class ObjectPath:
 
     @staticmethod
     def get(obj: dict[Any, Any] | list[Any], path: Path, default_value: Any = None) -> Any:
-        """Get a value at the specified path."""
-        # Handle empty paths
         if isinstance(path, str) and not path or isinstance(path, Sequence) and not path:
             return obj
 
-        # Convert single numbers or strings to a list
         if isinstance(path, int):
             path = [path]
         elif isinstance(path, str):
@@ -120,7 +109,6 @@ class ObjectPath:
 
     @staticmethod
     def set(obj: dict[Any, Any] | list[Any], path: Path, value: Any, do_not_replace: bool = False) -> Any:
-        """Set a value at the specified path."""
         if isinstance(path, int):
             path = [path]
         elif isinstance(path, str):
@@ -156,7 +144,6 @@ class ObjectPath:
 
     @staticmethod
     def push(obj: dict[Any, Any] | list[Any], path: Path, *items: Any) -> None:
-        """Push items to an array at the specified path."""
         target = ObjectPath.get(obj, path)
         if not isinstance(target, list):
             target = []
@@ -169,7 +156,6 @@ class ObjectPath:
         paths: Path | list[Path],
         default_value: Any = None,
     ) -> Any:
-        """Return the first non-None value from the specified paths."""
         paths_list = paths if isinstance(paths, list) else [paths]
         for path in paths_list:
             value = ObjectPath.get(obj, path)
@@ -179,7 +165,6 @@ class ObjectPath:
 
     @staticmethod
     def empty(obj: dict[Any, Any] | list[Any], path: Path) -> Any:
-        """Empty the value at the specified path."""
         value = ObjectPath.get(obj, path)
 
         if value is None:
@@ -198,12 +183,10 @@ class ObjectPath:
 
     @staticmethod
     def ensure_exists(obj: dict[Any, Any] | list[Any], path: Path, value: Any) -> Any:
-        """Ensure a value exists at the specified path."""
         return ObjectPath.set(obj, path, value, True)
 
     @staticmethod
     def insert(obj: dict[Any, Any] | list[Any], path: Path, value: Any, at: int = 0) -> None:
-        """Insert a value into an array at the specified path."""
         target = ObjectPath.get(obj, path)
         if not isinstance(target, list):
             target = []

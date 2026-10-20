@@ -109,7 +109,6 @@ export class Monitor extends EventEmitter {
     const result = await this.check();
     const wasAlive = this.isAlive;
 
-    // Status hat sich geändert
     if (result.alive !== wasAlive) {
       this.isAlive = result.alive;
       this.emit('status', result);

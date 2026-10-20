@@ -1,5 +1,3 @@
-"""Common utility functions."""
-
 from __future__ import annotations
 
 import asyncio
@@ -17,8 +15,6 @@ P = ParamSpec("P")
 
 
 def make_sync(async_func: Callable[P, Coroutine[Any, Any, R]]) -> Callable[P, R]:
-    """Convert an async function to a sync function."""
-
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
         try:
             loop = asyncio.get_running_loop()
@@ -37,7 +33,6 @@ def merge_with(
     customizer: Customizer[Any, Any] | None = None,
     stack: list[dict[Any, Any]] | None = None,
 ) -> TSource | TTarget:
-    """Merge target_object into source_object with optional customizer."""
     if stack is None:
         stack = []
 
@@ -93,7 +88,6 @@ def merge(
     target_object: dict[Any, Any] | list[Any] | Any,
     stack: list[Any],
 ) -> Any:
-    """Default merge customizer that replaces lists instead of concatenating."""
     if isinstance(source, list):
         return target
     return None

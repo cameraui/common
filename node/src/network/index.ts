@@ -25,7 +25,7 @@ function blockList(entries: [string, number, IPVersion?][]): net.BlockList {
 const unusableRanges = blockList([
   ['127.0.0.0', 8],
   ['169.254.0.0', 16],
-  ['100.64.0.0', 10], // CG-NAT (also Tailscale's overlay range) — never routable from outside that overlay
+  ['100.64.0.0', 10], // CG-NAT and the Tailscale overlay, not routable from outside
   ['0.0.0.0', 8],
   ['240.0.0.0', 4],
   ['::1', 128, 'ipv6'],
