@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "sdp-transform": "^3.0.0",
-    "systeminformation": "^5.33.16"
+    "systeminformation": "^5.33.18"
   },
   "peerDependencies": {
     "@camera.ui/sdk": ">=1.2.15"
