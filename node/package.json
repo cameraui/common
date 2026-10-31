@@ -48,7 +48,7 @@
     "lint": "eslint --fix .",
     "test": "vitest run --passWithNoTests",
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run format && npm run build",
-    "update": "updates -M npm,pypi,go,cargo,docker,make --update ./"
+    "update": "updates -M npm,pypi,go,cargo,docker --update ./"
   },
   "dependencies": {
     "sdp-transform": "^3.0.0",
