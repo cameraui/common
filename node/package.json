@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "sdp-transform": "^3.0.0",
-    "systeminformation": "^5.33.18"
+    "systeminformation": "^5.33.19"
   },
   "peerDependencies": {
     "@camera.ui/sdk": ">=1.2.15"
@@ -61,7 +61,7 @@
     "@camera.ui/sdk": "~1.4.4",
     "@seydx/fix-path": "^5.0.0",
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@types/node": "26.6.5",
+    "@types/node": "26.6.6",
     "@types/sdp-transform": "^3.0.0",
     "@typescript-eslint/parser": "^8.72.1",
     "ansicolor": "^2.0.3",
@@ -73,7 +73,7 @@
     "tsyringe": "^4.10.0",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.72.1",
-    "updates": "^19.3.0",
+    "updates": "^20.0.0",
     "vitest": "^5.0.5"
   },
   "author": "seydx (https://github.com/cameraui/common)",
