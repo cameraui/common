@@ -1,5 +1,6 @@
 export const SUPERVISOR_IPC_ENV = 'CAMERAUI_SUPERVISOR_IPC';
 export const SUPERVISOR_IPC_LEVEL = 2;
+export const LOG_APPEND_ONLY_ENV = 'CAMERAUI_LOG_APPEND_ONLY';
 
 // older supervisors kill 8 s after SIGTERM, so a stop without SHUTDOWN has to fit in there
 export const LEGACY_SUPERVISOR_BUDGET_MS = 6000;
