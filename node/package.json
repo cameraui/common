@@ -68,7 +68,7 @@
     "eslint": "9.39.2",
     "globals": "^17.14.0",
     "pick-port": "^2.2.1",
-    "prettier": "^3.9.10",
+    "prettier": "^3.10.0",
     "rimraf": "^6.1.4",
     "tsyringe": "^4.10.0",
     "typescript": "5.9.3",
