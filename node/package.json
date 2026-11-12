@@ -58,7 +58,7 @@
     "@camera.ui/sdk": ">=1.2.15"
   },
   "devDependencies": {
-    "@camera.ui/sdk": "~1.4.8",
+    "@camera.ui/sdk": "~1.4.9",
     "@seydx/fix-path": "^5.0.0",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "26.6.6",
@@ -68,7 +68,7 @@
     "eslint": "9.39.2",
     "globals": "^17.14.0",
     "pick-port": "^2.2.1",
-    "prettier": "^3.10.0",
+    "prettier": "^3.10.1",
     "rimraf": "^6.1.4",
     "tsyringe": "^4.10.0",
     "typescript": "5.9.3",
