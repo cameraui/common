@@ -48,7 +48,7 @@
     "lint": "eslint --fix .",
     "test": "vitest run --passWithNoTests",
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run format && npm run build",
-    "update": "updates -M npm,pypi,go,cargo,docker --update ./"
+    "update": "updates -M npm,pypi,go,cargo,docker -u"
   },
   "dependencies": {
     "sdp-transform": "^3.0.0",
@@ -60,7 +60,7 @@
   "devDependencies": {
     "@camera.ui/sdk": "~1.4.11",
     "@seydx/fix-path": "^5.0.0",
-    "@stylistic/eslint-plugin": "^6.0.0",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "26.6.6",
     "@types/sdp-transform": "^3.0.0",
     "@typescript-eslint/parser": "^8.72.2",
