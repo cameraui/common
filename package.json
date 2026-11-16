@@ -5,7 +5,7 @@
   "description": "camera.ui common monorepo",
   "type": "module",
   "scripts": {
-    "audit": "npm audit fix && npm --prefix node audit fix",
+    "audit": "npm audit fix --min-release-age=0 && npm --prefix node audit fix --min-release-age=0",
     "build:node": "npm --prefix node run build",
     "build:python": "cd python && python scripts/build.py --local",
     "build": "npm run build:node && npm run build:python",
@@ -37,5 +37,9 @@
     "tsx": "^4.23.15",
     "typescript": "5.9.3",
     "updates": "^20.0.1"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "fsevents": true
   }
 }

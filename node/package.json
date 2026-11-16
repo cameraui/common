@@ -90,5 +90,8 @@
     "camera.ui",
     "common",
     "utils"
-  ]
+  ],
+  "allowScripts": {
+    "fsevents": true
+  }
 }
