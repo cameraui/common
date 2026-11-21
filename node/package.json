@@ -89,7 +89,9 @@
   "keywords": [
     "camera.ui",
     "common",
-    "utils"
+    "utils",
+    "logging",
+    "networking"
   ],
   "allowScripts": {
     "fsevents": true
